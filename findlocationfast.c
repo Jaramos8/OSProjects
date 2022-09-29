@@ -1,3 +1,5 @@
+// Kevin Clemons - Roberto Carrasco - Joel Ramos
+
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
