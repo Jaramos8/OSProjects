@@ -128,7 +128,7 @@ int main(int argc, char **argv){
 /* This is part six. where the child process  replaces itself with a new executabl given by the second argument argv[2], the executable arguments are given by the 3rd and 4th arguments if applicable
  */	
 
-		if(execvp(argv[2], argv) < 0){
+		if(execvp(argv[2], &argv[2]) < 0){
 			fprintf(stderr, "execvp Failed: %s\n", strerror(errno));
 			return 1;
 		}
