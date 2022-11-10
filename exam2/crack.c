@@ -279,25 +279,25 @@ int main(int argc, char **argv) {
 	char password[] = "                ";
 	size_t rem = (size_t) 15;
 	size_t prev = (size_t) 15;
-	char * final = "";
 
 	for(i = (size_t) 0; i<sizeof(password); i++){
 		for(j = (size_t) 0; j<sizeof(set); j++){
-			size_t result = try_password(&rem,password);
+			password[i] = set[j];
+
+			if(try_password(&rem,password) < 0){
+				fprintf(stderr, "An error occured. Cannot crack the password %s\n",strerror(errno));	
+			}
 			if(rem < prev){
 				prev = rem;
 				break;
 			}
-			password[i] = set[j];
-		}
-		if((16-(i+1)) == rem){
-			memcpy(final,password,i+1);
-			printf("Succesfull / Password: %s\n", final);
-			return 0;
 		}
 
 	} 	
-       	
+       	if(!try_password(&rem,password)){
+		printf("%s\n", password);
+		return 0;
+	}
 
   	return 1;
 }
