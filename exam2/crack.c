@@ -273,18 +273,20 @@ static int try_password(size_t *remainder, const char *str) {
    and returns 1.
 
 */
+
+//Joel Ramos 11/9/2022
 int main(int argc, char **argv) {
-	char set[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*_-+<>/";
-	size_t i,j;
-	char password[] = "                ";
-	size_t rem = (size_t) 15;
-	size_t prev = (size_t) 15;
+	char set[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*_-+<>/"; // set of words
+	size_t i,j; 
+	char password[] = "                "; // 16 spaces \n
+	size_t rem = (size_t) 15; // remainder, had trouble getting this to work as size_t pointer gave segmentation error.
+	size_t prev = (size_t) 15; // previous remainder
 
 	for(i = (size_t) 0; i<sizeof(password); i++){
 		for(j = (size_t) 0; j<sizeof(set); j++){
 			password[i] = set[j];
 
-			if(try_password(&rem,password) < 0){
+			if(try_password(&rem,password) < 0){ // if it return -1 is an error
 				fprintf(stderr, "An error occured. Cannot crack the password %s\n",strerror(errno));	
 			}
 			if(rem < prev){
@@ -295,7 +297,7 @@ int main(int argc, char **argv) {
 
 	} 	
        	if(!try_password(&rem,password)){
-		printf("%s\n", password);
+		printf("Password: %s\n", password);
 		return 0;
 	}
 
