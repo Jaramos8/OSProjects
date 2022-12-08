@@ -41,7 +41,6 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <stdio.h>
-
 #include <fuse.h>
 
 
@@ -294,6 +293,9 @@ struct inode_table_entry {
     uint64_t access_time;
     uint64_t modification_time;
     uint64_t *data_block;
+    uint8_t used;
+    uint64_t mode;
+
 };
 
 struct data_block_table_entry {
