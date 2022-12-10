@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 
+
 /* Creates a new array of pointers to characters with argc+1 entries.
 
    Fills the first argc elements of that new array with copies of the
@@ -137,12 +138,13 @@ int run_child(int connfd, int argc, char **argv) {
   char **new_argv;
 
   /* Copy arguments to fit format for execvp */
-  if (/* TODO */) {
+  // Completed
+  if (execvp(argv[0], argv) < 0) {
     return -1;
   }
 
   /* Duplicate file descriptor to have one for input and one for output */
-  in = /* TODO */;
+  in = dup(connfd); //Completed
   if (in < 0) {
     fprintf(stderr, "Cannot duplicate a file descriptor: %s\n", strerror(errno));
     free_new_argv(new_argv);
@@ -153,7 +155,8 @@ int run_child(int connfd, int argc, char **argv) {
   out = connfd;
 
   /* Make input file descriptor have number of standard-in */
-  if (/* TODO */) {
+  //Completed
+  if (dup2(in, 0) < 0) {
     fprintf(stderr, "Cannot execute make a file descriptor become standard input: %s\n", strerror(errno));
     if (close(in) < 0) {
       fprintf(stderr, "Cannot close a file descriptor: %s\n", strerror(errno));
@@ -163,14 +166,16 @@ int run_child(int connfd, int argc, char **argv) {
   }
 
   /* Make output file descriptor have number of standard-out */
-  if (/* TODO */) {
+  //Completed
+  if (dup2(out, 1) < 0) {
     fprintf(stderr, "Cannot execute make a file descriptor become standard output: %s\n", strerror(errno));
     free_new_argv(new_argv);
     return -1;
   }
   
   /* Replace executable by the one given in arguments: execvp */
-  if (/* TODO */) {
+  //Completed
+  if (execvp(argv[0], argv) < 0) {
     fprintf(stderr, "Cannot replace executable: %s\n", strerror(errno));
     free_new_argv(new_argv);
     return -1;
@@ -207,16 +212,18 @@ int run_server(int connfd, int argc, char **argv) {
   int wstatus, status;
   
   /* Fork off a child */
-  kid = /* TODO */;
+  kid = fork(); //Completed
 
   /* Could not fork */
-  if (/* TODO */) {
+  // COmpleted
+  if (kid < 0) {
     fprintf(stderr, "Cannot fork off a child process: %s\n", strerror(errno));
     return -1;
   }
 
   /* In the child */
-  if (/* TODO */) {
+  //Completed
+  if (kid == 0) {
     if (run_child(connfd, argc, argv) < 0) {
       if (close(connfd) < 0) {
 	fprintf(stderr, "Cannot close a socket: %s\n", strerror(errno));
@@ -232,7 +239,8 @@ int run_server(int connfd, int argc, char **argv) {
   }
 
   /* Parent process: wait for child and get exit status: waitpid */
-  if (/* TODO */) {
+  //Completed
+  if (waitpid(kid, &wstatus, 0) < 0) {
     fprintf(stderr, "Cannot wait: %s\n", strerror(errno));
     return -1;
   }
@@ -315,16 +323,21 @@ int main(int argc, char **argv) {
   }
   
   /* Create a socket: IPv4, TCP */
-  sockfd = /* TODO */;
+  //Completed
+  sockfd = socket(AF_INET, SOCK_STREAM, 0);
   if (sockfd < 0) {
     fprintf(stderr, "Cannot create a socket: %s\n", strerror(errno));
     return 1;
   }
 
   /* Bind */
+  //Completed
   memset(&serveraddr, 0, sizeof(serveraddr));
-  /* TODO */
-  if (/* TODO */) {
+  serveraddr.sin_family = AF_INET;
+  serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
+  serveraddr.sin_port = htons(port);
+  //Completed
+  if (bind(sockfd, (struct sockaddr *) &serveraddr, sizeof(serveraddr)) < 0) {
     fprintf(stderr, "Cannot bind: %s\n", strerror(errno));
     if (close(sockfd) < 0) {
       fprintf(stderr, "Cannot close a socket: %s\n", strerror(errno));
@@ -333,7 +346,8 @@ int main(int argc, char **argv) {
   }
 
   /* Listen */
-  if (/* TODO */) {
+  //Complted
+  if (listen(sockfd, 5) < 0) {
     fprintf(stderr, "Cannot listen: %s\n", strerror(errno));
     if (close(sockfd) < 0) {
       fprintf(stderr, "Cannot close a socket: %s\n", strerror(errno));
@@ -343,7 +357,7 @@ int main(int argc, char **argv) {
 
   /* Accept */
   clientaddrlen = sizeof(clientaddr);
-  connfd = /* TODO */
+  connfd = accept(sockfd, (struct sockaddr *) &clientaddr, &clientaddrlen); //Completed
   if (connfd < 0) {
     fprintf(stderr, "Cannot accept a connection: %s\n", strerror(errno));
     if (close(sockfd) < 0) {
